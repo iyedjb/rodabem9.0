@@ -2382,7 +2382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
       
       if (existing) {
-        return res.status(409).json({ error: "Seat is already reserved" });
+        return res.status(409).json({ error: "Este assento já está reservado por outro passageiro." });
       }
 
       // Get destination to get the destination name
@@ -2475,7 +2475,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         const clientName = `${client.first_name} ${client.last_name}`.toLowerCase().trim();
         // Add client if they don't have a seat AND their name isn't already on a seat
-        if (!reservedClientIds.has(client.id) && !normalizedReservedNames.has(clientName)) {
+        const hasSeat = reservedClientIds.has(client.id) || normalizedReservedNames.has(clientName);
+        if (!hasSeat) {
           unassignedPassengers.push({
             id: client.id,
             name: `${client.first_name} ${client.last_name}`,
@@ -2491,7 +2492,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const children = await storage.getChildrenByClientId(client.id);
         for (const child of children) {
           const childName = child.name.toLowerCase().trim();
-          if (!reservedChildIds.has(child.id) && !normalizedReservedNames.has(childName)) {
+          const childHasSeat = reservedChildIds.has(child.id) || normalizedReservedNames.has(childName);
+          if (!childHasSeat) {
             unassignedPassengers.push({
               id: `child-${child.id}`,
               name: child.name,
@@ -2530,7 +2532,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
       
       if (existing) {
-        return res.status(409).json({ error: "Seat is already reserved" });
+        return res.status(409).json({ error: "Este assento já está reservado por outro passageiro." });
       }
 
       // Handle companion/child seat assignment
@@ -5425,3 +5427,4 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   return httpServer;
 }
+
