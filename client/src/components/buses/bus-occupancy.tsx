@@ -105,7 +105,7 @@ export function BusOccupancy() {
     enabled: !!selectedDestination?.name,
   });
 
-  const { data: unassignedClients = [], isLoading: isLoadingUnassigned } = useQuery({
+  const { data: unassignedClients = [], isLoading: isLoadingUnassigned, refetch: refetchUnassigned } = useQuery({
     queryKey: ['/api/clients/unassigned-seats', selectedDestination?.name],
     queryFn: async () => {
       if (!selectedDestination?.name) return [];
@@ -128,7 +128,16 @@ export function BusOccupancy() {
       return response.json();
     },
     enabled: !!selectedDestination?.name,
+    staleTime: 0, // Force fresh data for unassigned clients
+    refetchOnWindowFocus: true
   });
+
+  // Effect to refetch unassigned clients when destination changes
+  useEffect(() => {
+    if (selectedDestinationId) {
+      refetchUnassigned();
+    }
+  }, [selectedDestinationId, refetchUnassigned]);
 
   const updateSeatMutation = useMutation({
     mutationFn: async ({ reservationId, seatNumber }: { reservationId: string; seatNumber: string }) => {
@@ -1209,3 +1218,4 @@ export function BusOccupancy() {
     </div>
   );
 }
+
