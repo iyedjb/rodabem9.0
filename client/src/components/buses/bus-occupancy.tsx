@@ -682,14 +682,8 @@ export function BusOccupancy() {
   };
 
   const occupiedCount = reservations.length;
-  const unassignedCount = unassignedClients.filter((p: any) => {
-    // Check if this passenger already has a reservation in the current destination
-    return !reservations.some(r => 
-      (p.type === 'client' && r.client_id === p.client_id) || 
-      (p.type === 'companion' && r.child_id === p.child_id)
-    );
-  }).length;
-  const availableCount = selectedBus ? Math.max(0, selectedBus.total_seats - occupiedCount - unassignedCount) : 0;
+  const unassignedCount = unassignedClients.length;
+  const availableCount = selectedBus ? Math.max(0, selectedBus.total_seats - occupiedCount) : 0;
 
   return (
     <div className="space-y-1">
@@ -1218,4 +1212,5 @@ export function BusOccupancy() {
     </div>
   );
 }
+
 
